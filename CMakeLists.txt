@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 
 # === set the name of your project here ===
-set(ProjectName Hello_World)
+set(ProjectName pico-stdin)
 # =========================================
 
 include(pico_sdk_import.cmake)

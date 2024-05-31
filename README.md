@@ -1,14 +1,20 @@
-# pico-template
-This repository provides a simple template project for developing with the RPi Pico (RP2040) in Visual Studio Code on MacOS.
+# pico-stdin
+A simple program to demonstrate how to process user input from `stdin`, on the Pico / RP2040.
 
-The project configures VS Code to program and debug the target device via its SWD pins by using another Pico as a USB/SWD bridge (see [Picoprobe](https://github.com/raspberrypi/picoprobe)).
+Note that to send user input to the target in **VSCode** you have to move the cursor into the grey bar at the bottom of the serial monitor.
 
-## VSCode setup
-Note that for this to work VS Code needs a couple of external tools and plug-ins (e.g. see instructions [here](https://www.digikey.be/en/maker/projects/raspberry-pi-pico-and-rp2040-cc-part-2-debugging-with-vs-code/470abc7efb07432b82c95f6f67f184c0)).
+## Flushing `stdin` ##
+The first character you read always seems to be garbage. This may be a peculiarity of PicoProbe.
 
-> **Important** Both VSCode and CMake need to know where to find the Pico SDK in your setup. You can configure this as follows:
-- in VSCode open the command pallette and select `CMake: Open CMake tools extension settings`
-- under 'Cmake: Build Environment' add the item `PICO_SDK_PATH` with the value of the path to the Pico SDK on your machine (e.g. `~/pico/pico-sdk`)
-- add the same item further down under 'Cmake: Configure Environment'
-- finally, add and export `PICO_SDK_PATH` to your login shell environment (e.g. in `~/.zprofile`)
-- quit and relaunch VSCode
+Calling `fflush(stdin)` does nothing. To drain the buffer, do this:
+```
+while(getchar_timeout_us(0) == PICO_ERROR_TIMEOUT);
+```
+
+## Avoid `scanf()` ##
+Although `scanf()` looks useful it's got some **very** annoying flaws and is best avoided.
+
+Instead use `fgets()` followed by `sscanf()`.
+
+## Build environment ##
+The project configures VSCode to program and debug the target device via its SWD pins by using another Pico as a USB/SWD bridge (see [Picoprobe](https://github.com/raspberrypi/picoprobe)).
